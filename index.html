@@ -1,138 +1,812 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NURO＋携帯シミュレーター</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NURO＋携帯 総合シミュレーター</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b63ce">
-<link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b63ce" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-<style>
-body{font-family:sans-serif;background:#f3f6fb;margin:0;padding:20px}
-h1{margin-bottom:20px}
-.card{background:#fff;padding:20px;border-radius:16px;margin-bottom:16px}
-select,input{width:100%;padding:10px;border-radius:10px;border:1px solid #ccc}
-button{padding:12px;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
-.calc{background:#0b63ce;color:#fff}
-.clear{background:#ccc}
-.result{font-size:22px;font-weight:bold;margin-top:10px}
-</style>
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --text:#1a1f2c;
+      --sub:#667085;
+      --line:#dbe4f0;
+      --primary:#0b63ce;
+      --primary-dark:#084a9a;
+      --accent:#eef5ff;
+      --success:#e8f7ee;
+      --success-text:#137333;
+      --warn:#fff4e5;
+      --warn-text:#9a6700;
+      --danger:#fff1f1;
+      --danger-text:#b42318;
+      --shadow:0 10px 30px rgba(16,24,40,.08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:linear-gradient(180deg,#edf4ff 0%, #f7f9fc 240px, var(--bg) 240px);
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width:1180px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#0d4ea6 0%, #0b63ce 55%, #2d86ea 100%);
+      color:#fff;
+      border-radius:24px;
+      padding:24px 22px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -60px -80px auto;
+      width:240px;
+      height:240px;
+      background:radial-gradient(circle, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 70%);
+      pointer-events:none;
+    }
+
+    .hero-title{
+      font-size:clamp(28px,4vw,42px);
+      font-weight:800;
+      letter-spacing:.02em;
+      margin:0 0 8px;
+    }
+
+    .hero-sub{
+      margin:0;
+      color:rgba(255,255,255,.9);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.12fr .88fr;
+      gap:18px;
+    }
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(15,23,42,.04);
+    }
+
+    .form-card{
+      padding:20px;
+    }
+
+    .card-title{
+      font-size:20px;
+      font-weight:800;
+      margin:0 0 16px;
+    }
+
+    .section-label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--primary);
+      margin:18px 0 12px;
+      letter-spacing:.04em;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .row-3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:14px;
+    }
+
+    @media (max-width: 760px){
+      .row,.row-3{grid-template-columns:1fr}
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field label{
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .field small{
+      color:var(--sub);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    select,input[type="number"]{
+      width:100%;
+      appearance:none;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      padding:13px 14px;
+      font-size:16px;
+      color:var(--text);
+      outline:none;
+      transition:.18s ease;
+    }
+
+    select:focus,input[type="number"]:focus{
+      border-color:#8bb8f4;
+      box-shadow:0 0 0 4px rgba(11,99,206,.12);
+    }
+
+    .check{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-top:8px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fafcff;
+    }
+
+    .check input{
+      width:22px;
+      height:22px;
+      margin-top:1px;
+      accent-color:var(--primary);
+      flex:0 0 auto;
+    }
+
+    .check-text{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .check-text strong{
+      font-size:16px;
+    }
+
+    .check-text span{
+      font-size:12px;
+      color:var(--sub);
+      line-height:1.5;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      flex:1 1 220px;
+      border:none;
+      border-radius:16px;
+      padding:16px 18px;
+      font-size:17px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--primary) 0%, #2080e8 100%);
+      color:#fff;
+      box-shadow:0 10px 18px rgba(11,99,206,.22);
+    }
+
+    .btn-secondary{
+      background:#eef2f7;
+      color:#24324a;
+      border:1px solid #d6dfeb;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+
+    .side{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .summary-card{
+      padding:20px;
+      background:linear-gradient(180deg,#ffffff 0%, #f9fbff 100%);
+    }
+
+    .summary-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .summary-top h3{
+      margin:0;
+      font-size:19px;
+      font-weight:800;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:var(--accent);
+      color:var(--primary);
+      font-size:12px;
+      font-weight:800;
+      padding:7px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .total-box{
+      background:linear-gradient(135deg,#0b63ce 0%, #0a54af 100%);
+      color:#fff;
+      border-radius:20px;
+      padding:20px;
+      margin:14px 0 16px;
+    }
+
+    .total-label{
+      font-size:13px;
+      color:rgba(255,255,255,.88);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    .total-amount{
+      font-size:42px;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.03em;
+      margin-bottom:8px;
+    }
+
+    .total-sub{
+      font-size:13px;
+      color:rgba(255,255,255,.88);
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .kpi{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .kpi-label{
+      color:var(--sub);
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .kpi-value{
+      font-size:28px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+
+    .kpi-value.plus{
+      color:var(--danger-text);
+    }
+
+    .kpi-value.minus{
+      color:var(--success-text);
+    }
+
+    .compare-card{
+      padding:20px;
+    }
+
+    .compare-title{
+      font-size:18px;
+      font-weight:800;
+      margin:0 0 14px;
+    }
+
+    .mini{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      padding:10px 0;
+      border-bottom:1px solid #eef2f7;
+      font-size:15px;
+    }
+
+    .mini:last-child{border-bottom:none}
+    .mini .label{color:#4b5565}
+    .mini .value{font-weight:800}
+
+    .recommend{
+      margin-top:16px;
+      border-radius:16px;
+      padding:16px;
+      background:var(--warn);
+      color:#43310c;
+      border:1px solid #f4dfb8;
+    }
+
+    .recommend strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:16px;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .tag{
+      font-size:12px;
+      font-weight:700;
+      color:#35507a;
+      background:#f1f6fd;
+      border:1px solid #d7e4f5;
+      border-radius:999px;
+      padding:6px 10px;
+    }
+
+    .status-box{
+      margin-top:14px;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:14px;
+      line-height:1.6;
+      font-weight:700;
+    }
+
+    .status-good{
+      background:var(--success);
+      color:var(--success-text);
+      border:1px solid #cdebd6;
+    }
+
+    .status-bad{
+      background:var(--danger);
+      color:var(--danger-text);
+      border:1px solid #ffd5d2;
+    }
+
+    .note{
+      font-size:12px;
+      color:var(--sub);
+      line-height:1.65;
+      margin-top:14px;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <section class="hero">
+      <h1 class="hero-title">NURO＋携帯 総合シミュレーター</h1>
+      <p class="hero-sub">
+        光回線・携帯回線・台数・自宅セット割をまとめて試算。<br>
+        個人にも法人にも使える、営業向けの比較シミュレーター。
+      </p>
+    </section>
 
-<h1>NURO＋携帯 総合シミュレーター</h1>
+    <div class="grid">
+      <section class="card form-card">
+        <h2 class="card-title">条件入力</h2>
 
-<div class="card">
+        <div class="section-label">現在の光回線</div>
+        <div class="row">
+          <div class="field">
+            <label for="currentNet">現在の光回線プラン</label>
+            <select id="currentNet"></select>
+            <small>戸建て・マンション・タイプ別に選択できます。</small>
+          </div>
+          <div class="field">
+            <label for="nuroPlan">乗り換え後のNUROプラン</label>
+            <select id="nuroPlan"></select>
+            <small>営業向けの代表プランを表示しています。</small>
+          </div>
+        </div>
 
-<h3>光回線</h3>
-<select id="net">
-<option value="5720">ドコモ光 1G 戸建てA</option>
-<option value="5940">ドコモ光 1G 戸建てB</option>
-<option value="4400">ドコモ光 マンションA</option>
-<option value="4620">ドコモ光 マンションB</option>
-<option value="5720">ソフトバンク光 戸建て</option>
-<option value="4180">ソフトバンク光 マンション</option>
-<option value="6380">10G共通</option>
-<option value="5478">BIGLOBE光 1G</option>
-<option value="6270">BIGLOBE光 10G</option>
-</select>
+        <div class="section-label">現在の携帯</div>
+        <div class="row">
+          <div class="field">
+            <label for="currentMobile">現在の携帯プラン</label>
+            <select id="currentMobile"></select>
+            <small>キャリア名ではなくプラン単位で選択します。</small>
+          </div>
+          <div class="field">
+            <label for="count">台数</label>
+            <input type="number" id="count" min="1" max="50" value="3" />
+            <small>法人提案なら3台以上の比較がかなり効きます。</small>
+          </div>
+        </div>
 
-<h3>現在の携帯プラン</h3>
-<select id="mobile">
-<option value="7315">ドコモ eximo</option>
-<option value="2970">ahamo</option>
-<option value="7458">au 使い放題MAX</option>
-<option value="7425">ソフトバンク メリハリ</option>
-<option value="3278">楽天 無制限</option>
-<option value="4015">ワイモバ L</option>
-<option value="3278">UQ トクトク</option>
-</select>
+        <label class="check">
+          <input type="checkbox" id="currentSetwari" />
+          <span class="check-text">
+            <strong>現在の携帯にセット割を適用</strong>
+            <span>ドコモ / au / ソフトバンク / ワイモバイル / UQ / 楽天 / 法人特別プランに対応。</span>
+          </span>
+        </label>
 
-<h3>乗り換え後携帯</h3>
-<select id="afterMobile">
-<option value="5480">法人 無制限</option>
-<option value="4480">法人 50GB</option>
-<option value="3980">法人 20GB</option>
-<option value="3480">法人 5GB</option>
-<option value="4015">ワイモバ L</option>
-<option value="3278">UQ</option>
-<option value="3278">楽天</option>
-</select>
+        <div class="section-label">乗り換え後の携帯提案</div>
+        <div class="row">
+          <div class="field">
+            <label for="afterMobile">提案後の携帯プラン</label>
+            <select id="afterMobile"></select>
+            <small>「携帯乗り換えなし」も選べます。</small>
+          </div>
+          <div class="field">
+            <label for="phoneOption">固定電話</label>
+            <select id="phoneOption">
+              <option value="0">固定電話なし</option>
+              <option value="550">現在：光電話あり（550円）</option>
+            </select>
+            <small>現在回線側の固定電話基本料として加算します。</small>
+          </div>
+        </div>
 
-<h3>NURO</h3>
-<select id="nuro">
-<option value="3980">NURO 2G 3年</option>
-<option value="5500">NURO 2G 通常</option>
-</select>
+        <label class="check">
+          <input type="checkbox" id="afterSetwari" checked />
+          <span class="check-text">
+            <strong>提案後の携帯にセット割を適用</strong>
+            <span>ワイモバイル・UQは指定ルール、その他は1,100円基準、楽天は実質1,000円相当で計算。</span>
+          </span>
+        </label>
 
-<h3>台数</h3>
-<input type="number" id="count" value="3">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="calc()">試算する</button>
+          <button class="btn btn-secondary" onclick="clearAll()">クリア</button>
+        </div>
 
-<br><br>
+        <div class="tag-row">
+          <span class="tag">詳細プラン選択</span>
+          <span class="tag">法人プラン対応</span>
+          <span class="tag">乗り換えなし対応</span>
+          <span class="tag">セット割対応</span>
+          <span class="tag">3年試算対応</span>
+        </div>
+      </section>
 
-<label>
-<input type="checkbox" id="setwari">
-自宅セット割（1100円）
-</label>
+      <aside class="side">
+        <section class="card summary-card">
+          <div class="summary-top">
+            <h3>提案後の総額</h3>
+            <span class="pill">営業向け表示</span>
+          </div>
 
-<br><br>
+          <div class="total-box">
+            <div class="total-label">月額合計</div>
+            <div class="total-amount" id="afterMonthly">0円</div>
+            <div class="total-sub" id="afterBreakdown">NURO＋携帯提案後の合計</div>
+          </div>
 
-<button class="calc" onclick="calc()">計算</button>
-<button class="clear" onclick="clearAll()">クリア</button>
+          <div class="kpis">
+            <div class="kpi">
+              <div class="kpi-label">年間差額</div>
+              <div class="kpi-value" id="yearDiff">0円</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">3年差額</div>
+              <div class="kpi-value" id="threeYearDiff">0円</div>
+            </div>
+          </div>
 
-</div>
+          <div class="recommend" id="recommendBox">
+            <strong>おすすめ構成</strong>
+            <span id="recommendText">条件を選んで試算すると、おすすめ構成が表示されます。</span>
+          </div>
 
-<div class="card">
-<div class="result" id="result">月額：---</div>
-<div class="result" id="year">年間：---</div>
-<div class="result" id="three">3年：---</div>
-</div>
+          <div id="statusBox" class="status-box status-good">
+            ここに結果評価が表示されます。
+          </div>
 
-<script>
+          <div class="note">
+            ※ 楽天は月額値引きではなく、実質1,000円相当の還元扱いで計算しています。<br>
+            ※ 表示金額は営業用の月額目安です。実際の請求額とは条件により差が出る場合があります。<br>
+            ※ 提案後の携帯を「携帯乗り換えなし」にすると、現在の携帯プランと同額で計算します。
+          </div>
+        </section>
 
-function calc(){
-const net = Number(netSelect.value);
-const mobile = Number(mobileSelect.value);
-const afterMobile = Number(afterMobileSelect.value);
-const nuro = Number(nuroSelect.value);
-const count = Number(countInput.value);
+        <section class="card compare-card">
+          <h3 class="compare-title">比較詳細</h3>
 
-const setwari = setwariCheck.checked ? 1100 * count : 0;
+          <div class="mini"><span class="label">現在の光回線</span><span class="value" id="currentNetText">0円</span></div>
+          <div class="mini"><span class="label">現在の固定電話</span><span class="value" id="currentPhoneText">0円</span></div>
+          <div class="mini"><span class="label">現在の携帯合計</span><span class="value" id="currentMobileText">0円</span></div>
+          <div class="mini"><span class="label">現在のセット割</span><span class="value" id="currentDiscountText">-0円</span></div>
+          <div class="mini"><span class="label">現在の総額</span><span class="value" id="currentTotalText">0円</span></div>
 
-const current = net + (mobile * count);
-const after = nuro + (afterMobile * count) - setwari;
+          <div style="height:10px"></div>
 
-const diff = current - after;
+          <div class="mini"><span class="label">NURO</span><span class="value" id="afterNetText">0円</span></div>
+          <div class="mini"><span class="label">NUROでんわ</span><span class="value" id="afterPhoneText">0円</span></div>
+          <div class="mini"><span class="label">提案後の携帯合計</span><span class="value" id="afterMobileText">0円</span></div>
+          <div class="mini"><span class="label">提案後のセット割</span><span class="value" id="afterDiscountText">-0円</span></div>
+          <div class="mini"><span class="label">提案後の総額</span><span class="value" id="afterTotalText">0円</span></div>
+        </section>
+      </aside>
+    </div>
+  </div>
 
-result.innerText = "月額：" + after.toLocaleString() + "円";
-year.innerText = "年間：" + (diff*12).toLocaleString() + "円差";
-three.innerText = "3年：" + (diff*36).toLocaleString() + "円差";
-}
+  <script>
+    const currentNetPlans = [
+      { id: "docomo_1g_house_a", label: "ドコモ光 1G 戸建て タイプA", price: 5720 },
+      { id: "docomo_1g_house_b", label: "ドコモ光 1G 戸建て タイプB", price: 5940 },
+      { id: "docomo_1g_mansion_a", label: "ドコモ光 1G マンション タイプA", price: 4400 },
+      { id: "docomo_1g_mansion_b", label: "ドコモ光 1G マンション タイプB", price: 4620 },
+      { id: "docomo_10g_a", label: "ドコモ光 10G タイプA", price: 6380 },
+      { id: "docomo_10g_b", label: "ドコモ光 10G タイプB", price: 6600 },
+      { id: "softbank_1g_house", label: "ソフトバンク光 1G 戸建て", price: 5720 },
+      { id: "softbank_1g_mansion", label: "ソフトバンク光 1G マンション", price: 4180 },
+      { id: "softbank_10g", label: "ソフトバンク光 10G", price: 6380 },
+      { id: "au_1g_house", label: "auひかり 1G 戸建て", price: 5610 },
+      { id: "au_10g", label: "auひかり 10G", price: 6468 },
+      { id: "biglobe_1g_house", label: "BIGLOBE光 1G 戸建て", price: 5478 },
+      { id: "biglobe_1g_mansion", label: "BIGLOBE光 1G マンション", price: 4378 },
+      { id: "biglobe_10g", label: "BIGLOBE光 10G", price: 6270 }
+    ];
 
-function clearAll(){
-netSelect.selectedIndex = 0;
-mobileSelect.selectedIndex = 0;
-afterMobileSelect.selectedIndex = 0;
-nuroSelect.selectedIndex = 0;
-countInput.value = 1;
-setwariCheck.checked = false;
+    const nuroPlans = [
+      { id: "nuro_2g_3y", label: "NURO 2G 3年割", price: 3980, phone: 0 },
+      { id: "nuro_2g_normal", label: "NURO 2G 通常", price: 5500, phone: 0 },
+      { id: "nuro_10g_3y", label: "NURO 10G 3年割", price: 3980, phone: 0 },
+      { id: "nuro_10g_normal", label: "NURO 10G 通常", price: 6050, phone: 0 }
+    ];
 
-result.innerText = "月額：---";
-year.innerText = "年間：---";
-three.innerText = "3年：---";
-}
+    const mobilePlans = [
+      { id: "docomo_eximo", label: "ドコモ eximo 無制限", price: 7315, setwariType: "docomo" },
+      { id: "ahamo_30", label: "ahamo 30GB", price: 2970, setwariType: "none" },
+      { id: "ahamo_110", label: "ahamo 大盛り 110GB", price: 4950, setwariType: "none" },
 
-const netSelect = document.getElementById("net");
-const mobileSelect = document.getElementById("mobile");
-const afterMobileSelect = document.getElementById("afterMobile");
-const nuroSelect = document.getElementById("nuro");
-const countInput = document.getElementById("count");
-const setwariCheck = document.getElementById("setwari");
+      { id: "au_max", label: "au 使い放題MAX+", price: 7458, setwariType: "au" },
+      { id: "povo_3", label: "povo 3GB相当", price: 990, setwariType: "none" },
+      { id: "povo_20", label: "povo 20GB相当", price: 2700, setwariType: "none" },
 
-</script>
+      { id: "softbank_merihari", label: "ソフトバンク メリハリ無制限+", price: 7425, setwariType: "softbank" },
+      { id: "linemo_3", label: "LINEMO 3GB", price: 990, setwariType: "none" },
+      { id: "linemo_10", label: "LINEMO 10GB", price: 2090, setwariType: "none" },
+      { id: "linemo_30", label: "LINEMO 30GB", price: 2970, setwariType: "none" },
 
+      { id: "rakuten_3", label: "楽天 最強プラン 3GB", price: 1078, setwariType: "rakuten" },
+      { id: "rakuten_20", label: "楽天 最強プラン 20GB", price: 2178, setwariType: "rakuten" },
+      { id: "rakuten_unlimited", label: "楽天 最強プラン 無制限", price: 3278, setwariType: "rakuten" },
+
+      { id: "ymobile_s", label: "ワイモバイル シンプル3 S", price: 2365, setwariType: "ymobile_s" },
+      { id: "ymobile_m", label: "ワイモバイル シンプル3 M", price: 4015, setwariType: "ymobile_ml" },
+      { id: "ymobile_l", label: "ワイモバイル シンプル3 L", price: 5115, setwariType: "ymobile_ml" },
+
+      { id: "uq_mini", label: "UQ ミニミニプラン", price: 2365, setwariType: "uq" },
+      { id: "uq_tokutoku", label: "UQ トクトクプラン", price: 3278, setwariType: "uq" },
+      { id: "uq_tokutoku2", label: "UQ トクトクプラン2", price: 4378, setwariType: "uq" },
+
+      { id: "corp_5", label: "法人特別プラン 5GB", price: 3480, setwariType: "corp" },
+      { id: "corp_20", label: "法人特別プラン 20GB", price: 3980, setwariType: "corp" },
+      { id: "corp_50", label: "法人特別プラン 50GB", price: 4480, setwariType: "corp" },
+      { id: "corp_unlimited", label: "法人特別プラン 無制限", price: 5480, setwariType: "corp" },
+
+      { id: "keep_current", label: "携帯乗り換えなし", price: 0, setwariType: "keep" }
+    ];
+
+    const setwariRules = {
+      docomo: 1100,
+      au: 1100,
+      softbank: 1100,
+      rakuten: 1000,
+      corp: 1100,
+      uq: 1100,
+      ymobile_s: 1100,
+      ymobile_ml: 1650,
+      none: 0,
+      keep: 0
+    };
+
+    const el = {
+      currentNet: document.getElementById("currentNet"),
+      nuroPlan: document.getElementById("nuroPlan"),
+      currentMobile: document.getElementById("currentMobile"),
+      afterMobile: document.getElementById("afterMobile"),
+      count: document.getElementById("count"),
+      currentSetwari: document.getElementById("currentSetwari"),
+      afterSetwari: document.getElementById("afterSetwari"),
+      phoneOption: document.getElementById("phoneOption"),
+
+      afterMonthly: document.getElementById("afterMonthly"),
+      afterBreakdown: document.getElementById("afterBreakdown"),
+      yearDiff: document.getElementById("yearDiff"),
+      threeYearDiff: document.getElementById("threeYearDiff"),
+      recommendText: document.getElementById("recommendText"),
+      statusBox: document.getElementById("statusBox"),
+
+      currentNetText: document.getElementById("currentNetText"),
+      currentPhoneText: document.getElementById("currentPhoneText"),
+      currentMobileText: document.getElementById("currentMobileText"),
+      currentDiscountText: document.getElementById("currentDiscountText"),
+      currentTotalText: document.getElementById("currentTotalText"),
+
+      afterNetText: document.getElementById("afterNetText"),
+      afterPhoneText: document.getElementById("afterPhoneText"),
+      afterMobileText: document.getElementById("afterMobileText"),
+      afterDiscountText: document.getElementById("afterDiscountText"),
+      afterTotalText: document.getElementById("afterTotalText")
+    };
+
+    function yen(num){
+      return Number(num).toLocaleString("ja-JP") + "円";
+    }
+
+    function populateSelect(select, items, selectedId = null){
+      select.innerHTML = "";
+      items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = `${item.label}（${yen(item.price)}）`;
+        if (selectedId && item.id === selectedId) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function getById(list, id){
+      return list.find(item => item.id === id);
+    }
+
+    function getSetwariAmount(plan, checked){
+      if (!checked || !plan) return 0;
+      return setwariRules[plan.setwariType] ?? 0;
+    }
+
+    function init(){
+      populateSelect(el.currentNet, currentNetPlans, "softbank_1g_house");
+      populateSelect(el.nuroPlan, nuroPlans, "nuro_2g_3y");
+      populateSelect(el.currentMobile, mobilePlans.filter(p => p.id !== "keep_current"), "softbank_merihari");
+      populateSelect(el.afterMobile, mobilePlans, "corp_20");
+      calc();
+    }
+
+    function calc(){
+      const currentNetPlan = getById(currentNetPlans, el.currentNet.value);
+      const nuroPlan = getById(nuroPlans, el.nuroPlan.value);
+      const currentMobilePlan = getById(mobilePlans, el.currentMobile.value);
+      const afterMobilePlan = getById(mobilePlans, el.afterMobile.value);
+
+      const count = Math.max(1, Number(el.count.value) || 1);
+      const currentPhone = Number(el.phoneOption.value) || 0;
+      const afterPhone = currentPhone > 0 ? 550 : 0; // NUROでんわ簡易想定
+
+      const currentMobileUnit = currentMobilePlan.price;
+      const currentMobileTotal = currentMobileUnit * count;
+      const currentDiscount = getSetwariAmount(currentMobilePlan, el.currentSetwari.checked) * count;
+
+      const afterMobileUnit = afterMobilePlan.id === "keep_current" ? currentMobilePlan.price : afterMobilePlan.price;
+      const afterMobileBase = afterMobileUnit * count;
+
+      let afterDiscountPlan;
+      if (afterMobilePlan.id === "keep_current") {
+        afterDiscountPlan = currentMobilePlan;
+      } else {
+        afterDiscountPlan = afterMobilePlan;
+      }
+
+      const afterDiscount = getSetwariAmount(afterDiscountPlan, el.afterSetwari.checked) * count;
+
+      const currentTotal = currentNetPlan.price + currentPhone + currentMobileTotal - currentDiscount;
+      const afterTotal = nuroPlan.price + afterPhone + afterMobileBase - afterDiscount;
+
+      const monthDiff = currentTotal - afterTotal;
+      const yearDiff = monthDiff * 12;
+      const threeYearDiff = monthDiff * 36;
+
+      el.afterMonthly.textContent = yen(afterTotal);
+      el.afterBreakdown.textContent = `NURO ${yen(nuroPlan.price)} ＋ でんわ ${yen(afterPhone)} ＋ 携帯 ${yen(afterMobileBase)} − 割引 ${yen(afterDiscount)}`;
+
+      el.yearDiff.textContent = (yearDiff >= 0 ? "▲" : "+") + yen(Math.abs(yearDiff));
+      el.threeYearDiff.textContent = (threeYearDiff >= 0 ? "▲" : "+") + yen(Math.abs(threeYearDiff));
+
+      el.yearDiff.className = "kpi-value " + (yearDiff >= 0 ? "minus" : "plus");
+      el.threeYearDiff.className = "kpi-value " + (threeYearDiff >= 0 ? "minus" : "plus");
+
+      el.currentNetText.textContent = yen(currentNetPlan.price);
+      el.currentPhoneText.textContent = yen(currentPhone);
+      el.currentMobileText.textContent = yen(currentMobileTotal);
+      el.currentDiscountText.textContent = "-" + yen(currentDiscount);
+      el.currentTotalText.textContent = yen(currentTotal);
+
+      el.afterNetText.textContent = yen(nuroPlan.price);
+      el.afterPhoneText.textContent = yen(afterPhone);
+      el.afterMobileText.textContent = yen(afterMobileBase);
+      el.afterDiscountText.textContent = "-" + yen(afterDiscount);
+      el.afterTotalText.textContent = yen(afterTotal);
+
+      let recommendation = "";
+      if (afterMobilePlan.id === "keep_current") {
+        recommendation = "NUROのみ乗り換えて、携帯は現状維持で比較しています。まずは固定費の見直しだけ進めたい相手に向く提案です。";
+      } else if (afterMobilePlan.id.startsWith("corp_")) {
+        recommendation = "NURO＋法人特別プランが、コストと管理のバランスが最も良い構成です。法人提案ならかなり本命です。";
+      } else if (afterMobilePlan.id.startsWith("ymobile") || afterMobilePlan.id.startsWith("uq")) {
+        recommendation = "NURO＋サブブランド構成で、月額を抑えつつセット割も取りやすい提案です。価格重視の相手に向いています。";
+      } else if (afterMobilePlan.id.startsWith("rakuten")) {
+        recommendation = "NURO＋楽天で低コストを狙う構成です。価格は強いですが、通信品質の比較トークもセットで入れると刺さります。";
+      } else {
+        recommendation = "現状より改善余地があります。NUROとのセット提案で全体最適を狙えます。";
+      }
+
+      if (count >= 5 && !afterMobilePlan.id.startsWith("corp_") && afterMobilePlan.id !== "keep_current") {
+        recommendation += " 台数が多いので、法人特別プランも比較に出すとかなり強いです。";
+      }
+
+      el.recommendText.textContent = recommendation;
+
+      if (monthDiff > 0) {
+        el.statusBox.className = "status-box status-good";
+        el.statusBox.textContent = `毎月 ${yen(monthDiff)} の削減です。営業提案として十分にインパクトがあります。`;
+      } else if (monthDiff < 0) {
+        el.statusBox.className = "status-box status-bad";
+        el.statusBox.textContent = `毎月 ${yen(Math.abs(monthDiff))} 増加します。料金だけでは弱いので、通信品質・管理性・特典を含めた提案が必要です。`;
+      } else {
+        el.statusBox.className = "status-box status-good";
+        el.statusBox.textContent = "月額差はほぼ同水準です。料金以外の価値で詰める提案が向いています。";
+      }
+    }
+
+    function clearAll(){
+      el.currentNet.value = "softbank_1g_house";
+      el.nuroPlan.value = "nuro_2g_3y";
+      el.currentMobile.value = "softbank_merihari";
+      el.afterMobile.value = "corp_20";
+      el.count.value = 3;
+      el.currentSetwari.checked = false;
+      el.afterSetwari.checked = true;
+      el.phoneOption.value = "0";
+      calc();
+    }
+
+    init();
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
 </body>
 </html>
