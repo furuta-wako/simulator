@@ -19,12 +19,10 @@
       --sub:#667085;
       --line:#dbe4f0;
       --primary:#0b63ce;
-      --primary-dark:#084a9a;
       --accent:#eef5ff;
       --success:#e8f7ee;
       --success-text:#137333;
       --warn:#fff4e5;
-      --warn-text:#9a6700;
       --danger:#fff1f1;
       --danger-text:#b42318;
       --shadow:0 10px 30px rgba(16,24,40,.08);
@@ -54,16 +52,6 @@
       margin-bottom:18px;
       position:relative;
       overflow:hidden;
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:auto -60px -80px auto;
-      width:240px;
-      height:240px;
-      background:radial-gradient(circle, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 70%);
-      pointer-events:none;
     }
 
     .hero-title{
@@ -426,7 +414,7 @@
     <section class="hero">
       <h1 class="hero-title">NURO＋携帯 総合シミュレーター</h1>
       <p class="hero-sub">
-        光回線・携帯回線・台数・自宅セット割をまとめて試算。<br>
+        光回線・固定電話・携帯回線・台数・自宅セット割をまとめて試算。<br>
         個人にも法人にも使える、営業向けの比較シミュレーター。
       </p>
     </section>
@@ -446,6 +434,35 @@
             <label for="nuroPlan">乗り換え後のNUROプラン</label>
             <select id="nuroPlan"></select>
             <small>営業向けの代表プランを表示しています。</small>
+          </div>
+        </div>
+
+        <div class="section-label">固定電話</div>
+        <div class="row-3">
+          <div class="field">
+            <label for="currentPhoneOption">現在の固定電話</label>
+            <select id="currentPhoneOption">
+              <option value="0">現在：固定電話なし</option>
+              <option value="550">現在：固定電話あり（550円）</option>
+            </select>
+            <small>現在回線側の固定電話基本料です。</small>
+          </div>
+          <div class="field">
+            <label for="afterPhoneEnabled">提案後のNUROでんわ</label>
+            <select id="afterPhoneEnabled">
+              <option value="0">提案後：NUROでんわなし</option>
+              <option value="1">提案後：NUROでんわあり</option>
+            </select>
+            <small>ありを選ぶとエリア料金が反映されます。</small>
+          </div>
+          <div class="field">
+            <label for="nuroPhoneArea">NUROでんわエリア</label>
+            <select id="nuroPhoneArea">
+              <option value="550">北海道・東北・関東（550円）</option>
+              <option value="330">東海・関西・中国・九州（330円）</option>
+              <option value="0">対象外・なし（0円）</option>
+            </select>
+            <small>提案後のNUROでんわ料金にだけ適用します。</small>
           </div>
         </div>
 
@@ -472,20 +489,10 @@
         </label>
 
         <div class="section-label">乗り換え後の携帯提案</div>
-        <div class="row">
-          <div class="field">
-            <label for="afterMobile">提案後の携帯プラン</label>
-            <select id="afterMobile"></select>
-            <small>「携帯乗り換えなし」も選べます。</small>
-          </div>
-          <div class="field">
-            <label for="phoneOption">固定電話</label>
-            <select id="phoneOption">
-              <option value="0">固定電話なし</option>
-              <option value="550">現在：光電話あり（550円）</option>
-            </select>
-            <small>現在回線側の固定電話基本料として加算します。</small>
-          </div>
+        <div class="field">
+          <label for="afterMobile">提案後の携帯プラン</label>
+          <select id="afterMobile"></select>
+          <small>「携帯乗り換えなし」も選べます。</small>
         </div>
 
         <label class="check">
@@ -503,10 +510,10 @@
 
         <div class="tag-row">
           <span class="tag">詳細プラン選択</span>
+          <span class="tag">エリア切替対応</span>
+          <span class="tag">固定電話分離</span>
           <span class="tag">法人プラン対応</span>
           <span class="tag">乗り換えなし対応</span>
-          <span class="tag">セット割対応</span>
-          <span class="tag">3年試算対応</span>
         </div>
       </section>
 
@@ -534,7 +541,7 @@
             </div>
           </div>
 
-          <div class="recommend" id="recommendBox">
+          <div class="recommend">
             <strong>おすすめ構成</strong>
             <span id="recommendText">条件を選んで試算すると、おすすめ構成が表示されます。</span>
           </div>
@@ -546,7 +553,8 @@
           <div class="note">
             ※ 楽天は月額値引きではなく、実質1,000円相当の還元扱いで計算しています。<br>
             ※ 表示金額は営業用の月額目安です。実際の請求額とは条件により差が出る場合があります。<br>
-            ※ 提案後の携帯を「携帯乗り換えなし」にすると、現在の携帯プランと同額で計算します。
+            ※ 提案後の携帯を「携帯乗り換えなし」にすると、現在の携帯プランと同額で計算します。<br>
+            ※ NUROでんわは選択エリアに応じて 550円 / 330円 / 0円 を反映します。
           </div>
         </section>
 
@@ -590,10 +598,10 @@
     ];
 
     const nuroPlans = [
-      { id: "nuro_2g_3y", label: "NURO 2G 3年割", price: 3980, phone: 0 },
-      { id: "nuro_2g_normal", label: "NURO 2G 通常", price: 5500, phone: 0 },
-      { id: "nuro_10g_3y", label: "NURO 10G 3年割", price: 3980, phone: 0 },
-      { id: "nuro_10g_normal", label: "NURO 10G 通常", price: 6050, phone: 0 }
+      { id: "nuro_2g_3y", label: "NURO 2G 3年割", price: 3850 },
+      { id: "nuro_2g_normal", label: "NURO 2G 通常", price: 5500 },
+      { id: "nuro_10g_3y", label: "NURO 10G 3年割", price: 4400 },
+      { id: "nuro_10g_normal", label: "NURO 10G 通常", price: 6050 }
     ];
 
     const mobilePlans = [
@@ -646,12 +654,14 @@
     const el = {
       currentNet: document.getElementById("currentNet"),
       nuroPlan: document.getElementById("nuroPlan"),
+      currentPhoneOption: document.getElementById("currentPhoneOption"),
+      afterPhoneEnabled: document.getElementById("afterPhoneEnabled"),
+      nuroPhoneArea: document.getElementById("nuroPhoneArea"),
       currentMobile: document.getElementById("currentMobile"),
       afterMobile: document.getElementById("afterMobile"),
       count: document.getElementById("count"),
       currentSetwari: document.getElementById("currentSetwari"),
       afterSetwari: document.getElementById("afterSetwari"),
-      phoneOption: document.getElementById("phoneOption"),
 
       afterMonthly: document.getElementById("afterMonthly"),
       afterBreakdown: document.getElementById("afterBreakdown"),
@@ -697,6 +707,12 @@
       return setwariRules[plan.setwariType] ?? 0;
     }
 
+    function getNuroPhoneFee(){
+      const enabled = Number(el.afterPhoneEnabled.value);
+      if (!enabled) return 0;
+      return Number(el.nuroPhoneArea.value) || 0;
+    }
+
     function init(){
       populateSelect(el.currentNet, currentNetPlans, "softbank_1g_house");
       populateSelect(el.nuroPlan, nuroPlans, "nuro_2g_3y");
@@ -712,8 +728,8 @@
       const afterMobilePlan = getById(mobilePlans, el.afterMobile.value);
 
       const count = Math.max(1, Number(el.count.value) || 1);
-      const currentPhone = Number(el.phoneOption.value) || 0;
-      const afterPhone = currentPhone > 0 ? 550 : 0; // NUROでんわ簡易想定
+      const currentPhone = Number(el.currentPhoneOption.value) || 0;
+      const afterPhone = getNuroPhoneFee();
 
       const currentMobileUnit = currentMobilePlan.price;
       const currentMobileTotal = currentMobileUnit * count;
@@ -722,13 +738,7 @@
       const afterMobileUnit = afterMobilePlan.id === "keep_current" ? currentMobilePlan.price : afterMobilePlan.price;
       const afterMobileBase = afterMobileUnit * count;
 
-      let afterDiscountPlan;
-      if (afterMobilePlan.id === "keep_current") {
-        afterDiscountPlan = currentMobilePlan;
-      } else {
-        afterDiscountPlan = afterMobilePlan;
-      }
-
+      const afterDiscountPlan = afterMobilePlan.id === "keep_current" ? currentMobilePlan : afterMobilePlan;
       const afterDiscount = getSetwariAmount(afterDiscountPlan, el.afterSetwari.checked) * count;
 
       const currentTotal = currentNetPlan.price + currentPhone + currentMobileTotal - currentDiscount;
@@ -776,6 +786,18 @@
         recommendation += " 台数が多いので、法人特別プランも比較に出すとかなり強いです。";
       }
 
+      if (afterPhone > 0 && currentPhone === 0) {
+        recommendation += " 固定電話も追加しているので、電話ニーズがある相手向けの提案になっています。";
+      }
+
+      if (afterPhone === 0 && currentPhone > 0) {
+        recommendation += " 提案後は固定電話を外しているので、電話不要の相手には削減効果を強く出せます。";
+      }
+
+      if (Number(el.afterPhoneEnabled.value) === 1 && Number(el.nuroPhoneArea.value) === 330) {
+        recommendation += " NUROでんわは330円エリアで計算しているため、より有利な試算になっています。";
+      }
+
       el.recommendText.textContent = recommendation;
 
       if (monthDiff > 0) {
@@ -793,12 +815,14 @@
     function clearAll(){
       el.currentNet.value = "softbank_1g_house";
       el.nuroPlan.value = "nuro_2g_3y";
+      el.currentPhoneOption.value = "0";
+      el.afterPhoneEnabled.value = "0";
+      el.nuroPhoneArea.value = "550";
       el.currentMobile.value = "softbank_merihari";
       el.afterMobile.value = "corp_20";
       el.count.value = 3;
       el.currentSetwari.checked = false;
       el.afterSetwari.checked = true;
-      el.phoneOption.value = "0";
       calc();
     }
 
