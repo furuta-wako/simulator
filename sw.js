@@ -1,4 +1,4 @@
-const CACHE_NAME = "nuro-sim-v1";
+const CACHE_NAME = "nuro-sim-v999";
 
 const urlsToCache = [
   "./",
